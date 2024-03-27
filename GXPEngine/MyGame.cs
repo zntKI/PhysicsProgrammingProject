@@ -12,15 +12,8 @@ public class MyGame : Game {
 		//table.scale /= 5f;
 		AddChild(table);
 
-        Sprite ball = new Sprite("Assets/ball 1.png");
-        ball.SetOrigin(ball.width / 2, ball.height / 2);
-        ball.scale /= 6f;
-		ball.scale *= 1.5f;
-        ball.SetXY(game.width * 1/3f, ball.width / 2);
-        AddChild(ball);
-
-        Cue cue = new Cue("Assets/cue2.png");
-        AddChild(cue);
+        CueBall cueBall = new CueBall("Assets/ball_16.png", new Vec2(game.width / 2 + table.width * 0.25f, game.height / 2));
+		AddChild(cueBall);
     }
 
 	// For every game object, Update is called every frame, by the engine:

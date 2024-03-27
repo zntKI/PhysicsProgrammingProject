@@ -12,18 +12,20 @@ public class Cue : Sprite
     Vec2 mousePosition;
 
     bool isCharging = false;
-    Vec2 positionCharge;
+    Vec2 chargePosition;
     Vec2 chargeMousePos;
     Vec2 chargeMousePosNormal;
     float chargeDistance;
 
-    public Cue(string filename, bool keepInCache = false, bool addCollider = false) : base(filename, keepInCache, addCollider)
+    public Cue(string filename, Vec2 position, bool keepInCache = false, bool addCollider = false) : base(filename, keepInCache, addCollider)
     {
-        SetOrigin(width, height / 2);
+        SetOrigin(width + 100, height / 2);
         SetXY(game.width / 2, game.height / 2);
         SetScaleXY(scale / 6f);
 
-        position = new Vec2(x, y);
+        this.position = position;
+        UpdateCoordinates();
+
         mousePosition = new Vec2(Input.mouseX, Input.mouseY);
 
         chargeMousePos = new Vec2();
@@ -69,13 +71,14 @@ public class Cue : Sprite
         if (!isCharging && Input.GetMouseButtonDown(0))
         {
             isCharging = true;
-            positionCharge = position;
+            chargePosition = position;
             chargeMousePos = mousePosition;
             chargeMousePosNormal = (chargeMousePos - position).Normalized();
         }
         if (Input.GetMouseButtonUp(0))
         {
             isCharging = false;
+            Release();
         }
 
         if (isCharging)
@@ -91,9 +94,19 @@ public class Cue : Sprite
 
         if (chargeDistance > 0)
         {
-            position = positionCharge - chargeDistance * chargeMousePosNormal;
+            position = chargePosition - chargeDistance * chargeMousePosNormal;
+        }
+    }
+
+    private void Release()
+    {
+        if (chargeDistance <= 0)
+        {
+            position = chargePosition;
+            return;
         }
 
-        Console.WriteLine(chargeDistance);
+        //Launch
+        alpha = 0;
     }
 }
