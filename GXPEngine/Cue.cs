@@ -7,9 +7,15 @@ using System.Threading.Tasks;
 
 public class Cue : Sprite
 {
-    private Vec2 position;
+    Vec2 position;
 
-    private Vec2 mousePosition;
+    Vec2 mousePosition;
+
+    bool isCharging = false;
+    Vec2 positionCharge;
+    Vec2 chargeMousePos;
+    Vec2 chargeMousePosNormal;
+    float chargeDistance;
 
     public Cue(string filename, bool keepInCache = false, bool addCollider = false) : base(filename, keepInCache, addCollider)
     {
@@ -19,13 +25,19 @@ public class Cue : Sprite
 
         position = new Vec2(x, y);
         mousePosition = new Vec2(Input.mouseX, Input.mouseY);
+
+        chargeMousePos = new Vec2();
+        chargeMousePosNormal = new Vec2();
     }
 
     void Update()
     {
         UpdateMousePosition();
 
+        CheckForMouseInput();
         Rotate();
+
+        UpdateCoordinates();
     }
 
     private void UpdateMousePosition()
@@ -33,11 +45,55 @@ public class Cue : Sprite
         mousePosition.SetXY(Input.mouseX, Input.mouseY);
     }
 
+    private void UpdateCoordinates()
+    {
+        x = position.x;
+        y = position.y;
+    }
+
     private void Rotate()
     {
+        if (isCharging)
+            return;
+
         Vec2 vecToMouse = mousePosition - position;
         float deg = vecToMouse.GetAngleDegrees();
 
         rotation = deg;
+    }
+
+    private void CheckForMouseInput()
+    {
+        //Check if mouse button has been pressed in the current frame
+        //  Yes -> isCharging = true;
+        if (!isCharging && Input.GetMouseButtonDown(0))
+        {
+            isCharging = true;
+            positionCharge = position;
+            chargeMousePos = mousePosition;
+            chargeMousePosNormal = (chargeMousePos - position).Normalized();
+        }
+        if (Input.GetMouseButtonUp(0))
+        {
+            isCharging = false;
+        }
+
+        if (isCharging)
+        {
+            Charge();
+        }
+    }
+
+    private void Charge()
+    {
+        Vec2 vecToChargeMousePos = chargeMousePos - mousePosition;
+        chargeDistance = Vec2.Dot(vecToChargeMousePos, chargeMousePosNormal);
+
+        if (chargeDistance > 0)
+        {
+            position = positionCharge - chargeDistance * chargeMousePosNormal;
+        }
+
+        Console.WriteLine(chargeDistance);
     }
 }
