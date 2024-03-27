@@ -23,25 +23,22 @@ namespace GXPEngine
         public void Normalize()
         {
             var length = Magnitude();
-            if (length == 0)
+            if (length > 0)
             {
-                return;
+                x /= length;
+                y /= length;
             }
-
-            x /= length;
-            y /= length;
         }
 
         public Vec2 Normalized()
         {
-            var length = Magnitude();
-            if (length == 0)
-            {
-                return this;
-            }
-
-            return new Vec2(x / length, y / length);
+            Vec2 result = new Vec2(x, y);
+            result.Normalize();
+            return result;
         }
+
+        public Vec2 Normal()
+        => new Vec2(-y, x).Normalized();
 
         public void SetXY(float x, float y)
         {
@@ -88,6 +85,9 @@ namespace GXPEngine
             this = vecToRotate;
         }
 
+        public void Reflect(Vec2 unitNormal, float C = 1f)
+        => this = this - (1 + C) * Dot(this, unitNormal) * unitNormal;
+
         public static Vec2 operator +(Vec2 left, Vec2 right)
             => new Vec2(left.x + right.x, left.y + right.y);
 
@@ -104,6 +104,9 @@ namespace GXPEngine
         {
             return String.Format("({0},{1})", x, y);
         }
+
+        public static float Dot(Vec2 firstVec2, Vec2 secondVec2)
+        => (firstVec2.x * secondVec2.x) + (firstVec2.y * secondVec2.y);
 
         public static float Deg2Rad(float deg)
             => deg * Mathf.PI / 180;
