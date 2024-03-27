@@ -3,22 +3,25 @@ using GXPEngine;                                // GXPEngine contains the engine
 using System.Drawing;                           // System.Drawing contains drawing tools such as Color definitions
 
 public class MyGame : Game {
-	public MyGame() : base(800, 600, false)     // Create a window that's 800x600 and NOT fullscreen
+	public MyGame() : base(960, 540, false)     // Create a window that's 800x600 and NOT fullscreen
 	{
-		// Draw some things on a canvas:
-		EasyDraw canvas = new EasyDraw(800, 600);
-		canvas.Clear(Color.MediumPurple);
-		canvas.Fill(Color.Yellow);
-		canvas.Ellipse(width / 2, height / 2, 200, 200);
-		canvas.Fill(50);
-		canvas.TextSize(32);
-		canvas.TextAlign(CenterMode.Center, CenterMode.Center);
-		canvas.Text("Welcome!", width / 2, height / 2);
+		Sprite table = new Sprite("Assets/table.png");
+        table.SetOrigin(table.width / 2, table.height / 2);
+        table.SetXY(game.width / 2, game.height / 2);
+        table.SetScaleXY(scale / 6f);
+		//table.scale /= 5f;
+		AddChild(table);
 
-		// Add the canvas to the engine to display it:
-		AddChild(canvas);
-		Console.WriteLine("MyGame initialized");
-	}
+        Sprite ball = new Sprite("Assets/ball 1.png");
+        ball.SetOrigin(ball.width / 2, ball.height / 2);
+        ball.scale /= 6f;
+		ball.scale *= 1.5f;
+        ball.SetXY(game.width * 1/3f, ball.width / 2);
+        AddChild(ball);
+
+        Cue cue = new Cue("Assets/cue2.png");
+        AddChild(cue);
+    }
 
 	// For every game object, Update is called every frame, by the engine:
 	void Update() {
