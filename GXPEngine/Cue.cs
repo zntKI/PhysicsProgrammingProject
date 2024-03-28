@@ -115,5 +115,6 @@ public class Cue : Sprite
 
         //Launch
         alpha = 0;
+        cueBall.velocity = chargeMousePosNormal * 5f;
     }
 }

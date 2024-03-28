@@ -21,7 +21,7 @@ public class Table : Sprite
         SetScaleXY(scale / 6f);
 
         topBorderY = game.height / 2 - height / 2 + distanceFromTableEndToBorder;
-        rightBorderX = game.width / 2 + width / 2 + distanceFromTableEndToBorder;
+        rightBorderX = game.width / 2 + width / 2 - distanceFromTableEndToBorder;
         bottomBorderY = game.height / 2 + height / 2 - distanceFromTableEndToBorder;
         leftBorderX = game.width / 2 - width / 2 + distanceFromTableEndToBorder;
     }
