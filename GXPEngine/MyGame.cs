@@ -11,8 +11,8 @@ public class MyGame : Game {
 		table = new Table("Assets/table.png");
 		AddChild(table);
 
-        CueBall cueBall = new CueBall("Assets/ball_16.png", new Vec2(game.width / 2 + table.width * 0.25f, game.height / 2));
-		AddChild(cueBall);
+		Cue cue = new Cue("Assets/cue2.png");
+		AddChild(cue);
     }
 
 	// For every game object, Update is called every frame, by the engine:

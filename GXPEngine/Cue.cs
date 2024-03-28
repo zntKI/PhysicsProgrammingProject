@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 public class Cue : Sprite
 {
+    Ball cueBall;
+
     Vec2 position;
 
     Vec2 mousePosition;
@@ -17,13 +19,17 @@ public class Cue : Sprite
     Vec2 chargeMousePosNormal;
     float chargeDistance;
 
-    public Cue(string filename, Vec2 position, bool keepInCache = false, bool addCollider = false) : base(filename, keepInCache, addCollider)
+    public Cue(string filename, bool keepInCache = false, bool addCollider = false) : base(filename, keepInCache, addCollider)
     {
+        Vec2 cueBallPosition = new Vec2(game.width / 2 + ((MyGame)game).table.width * 0.25f, game.height / 2);
+        cueBall = new Ball("Assets/ball_16.png", cueBallPosition);
+        game.AddChild(cueBall);
+
         SetOrigin(width + 100, height / 2);
         SetXY(game.width / 2, game.height / 2);
         SetScaleXY(scale / 6f);
 
-        this.position = position;
+        this.position = cueBallPosition;
         UpdateCoordinates();
 
         mousePosition = new Vec2(Input.mouseX, Input.mouseY);
