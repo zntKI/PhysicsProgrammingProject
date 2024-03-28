@@ -40,6 +40,8 @@ public class Ball : Sprite
         oldPosition = position;
 
         Move();
+
+        UpdateCoordinates();
     }
 
     protected void Move()
@@ -48,8 +50,6 @@ public class Ball : Sprite
 
         CheckForBoundaries();
         //CheckForBalls();
-
-        UpdateCoordinates();
     }
 
     private void CheckForBoundaries()
