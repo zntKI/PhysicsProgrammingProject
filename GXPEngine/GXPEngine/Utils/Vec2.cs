@@ -46,6 +46,9 @@ namespace GXPEngine
             this.y = y;
         }
 
+        public void SetXY(Vec2 vec2)
+            => this = vec2;
+
         public float GetAngleRadians()
             => Mathf.Atan2(y, x);
 

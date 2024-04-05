@@ -43,6 +43,8 @@ public class Cue : Sprite
     {
         UpdateMousePosition();
 
+        CheckCueBall();
+
         CheckForMouseInput();
         Rotate();
 
@@ -115,6 +117,15 @@ public class Cue : Sprite
 
         //Launch
         alpha = 0;
-        cueBall.velocity = chargeMousePosNormal * 5f;
+        cueBall.velocity = chargeMousePosNormal * chargeDistance;
+    }
+
+    private void CheckCueBall()
+    {
+        if (alpha == 0 && cueBall.velocity.Magnitude() < 0.01f)
+        {
+            alpha = 1;
+            position.SetXY(cueBall.position);
+        }
     }
 }

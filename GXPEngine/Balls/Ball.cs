@@ -12,8 +12,8 @@ public class Ball : Sprite
     protected readonly float bounciness;
     protected readonly float friction;
 
-    protected Vec2 oldPosition;
-    protected Vec2 position;
+    public Vec2 oldPosition;
+    public Vec2 position;
 
     public Vec2 velocity;
 
@@ -21,7 +21,7 @@ public class Ball : Sprite
     {
         mass = 0.17f;
         bounciness = 0.95f;
-        friction = 0.06f;
+        friction = 0.06f; //Think of smth better
 
         SetOrigin(width / 2, height / 2);
         scale /= 6f;
@@ -46,6 +46,7 @@ public class Ball : Sprite
 
     protected void Move()
     {
+        velocity *= (1 - friction);
         position += velocity;
 
         CheckForBoundaries();

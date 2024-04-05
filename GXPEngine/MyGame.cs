@@ -7,7 +7,7 @@ public class MyGame : Game {
 	public Table table;
 	public BallManager ballManager;
 
-	public MyGame() : base(960, 540, false)     // Create a window that's 800x600 and NOT fullscreen
+	public MyGame() : base(960, 540, false)
 	{
 		table = new Table("Assets/table.png");
 		AddChild(table);
@@ -28,8 +28,8 @@ public class MyGame : Game {
         ballManager.StepThroughBalls();
 	}
 
-	static void Main()                          // Main() is the first method that's called when the program is run
+	static void Main()
 	{
-		new MyGame().Start();                   // Create a "MyGame" and start it
+		new MyGame().Start();
 	}
 }
