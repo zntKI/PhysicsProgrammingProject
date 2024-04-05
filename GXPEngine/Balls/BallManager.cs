@@ -6,23 +6,23 @@ using System.Threading.Tasks;
 
 public class BallManager
 {
-    List<Ball> balls;
+    List<PoolBall> poolBalls;
 
     public BallManager()
     {
-        balls = new List<Ball>();
+        poolBalls = new List<PoolBall>();
     }
 
-    public void Add(Ball ball)
+    public void Add(PoolBall poolBall)
     {
-        balls.Add(ball);
+        poolBalls.Add(poolBall);
     }
 
     public void StepThroughBalls()
     {
-        foreach (Ball ball in balls)
+        foreach (PoolBall poolBall in poolBalls)
         {
-            ball.Step();
+            poolBall.Step();
         }
     }
 }
