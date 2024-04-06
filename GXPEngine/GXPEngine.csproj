@@ -43,6 +43,8 @@
   <ItemGroup>
     <Compile Include="Balls\Ball.cs" />
     <Compile Include="Balls\BallManager.cs" />
+    <Compile Include="Balls\PoolBall.cs" />
+    <Compile Include="Components\LineSegment.cs" />
     <Compile Include="Cue.cs" />
     <Compile Include="GXPEngine\AddOns\Gizmos.cs" />
     <Compile Include="GXPEngine\AddOns\SpriteBatch.cs" />

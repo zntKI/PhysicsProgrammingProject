@@ -10,10 +10,10 @@ public class Ball : Sprite
     protected float radius;
     public Vec2 position;
 
-    public Ball(Vec2 position, float radius = 0f) : base("", false, false)
+    public Ball(Vec2 position) : base("", false, false)
     {
         this.position = position;
-        this.radius = radius;
+        this.radius = 0f;
     }
 
     public Ball(string filename, bool keepInCache = false, bool addCollider = true) : base(filename, keepInCache, addCollider)
