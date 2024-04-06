@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public class LineSegment
+public class LineSegment : GameObject
 {
     public Vec2 start;
     public Vec2 end;

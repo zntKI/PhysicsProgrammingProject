@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public class BallManager
+public class PoolBallManager
 {
+    public int CountOfBalls
+        => poolBalls.Count;
+
     List<PoolBall> poolBalls;
 
-    public BallManager()
+    public PoolBallManager()
     {
         poolBalls = new List<PoolBall>();
     }
@@ -17,6 +20,9 @@ public class BallManager
     {
         poolBalls.Add(poolBall);
     }
+
+    public PoolBall GetBall(int i)
+        => poolBalls[i];
 
     public void StepThroughBalls()
     {

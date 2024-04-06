@@ -5,14 +5,14 @@ using System.Drawing;                           // System.Drawing contains drawi
 public class MyGame : Game {
 	
 	public Table table;
-	public BallManager ballManager;
+	public PoolBallManager ballManager;
 
 	public MyGame() : base(960, 540, false)
 	{
 		table = new Table("Assets/table.png");
 		AddChild(table);
 
-		ballManager = new BallManager();
+		ballManager = new PoolBallManager();
 		AddBalls();
 
         Cue cue = new Cue("Assets/cue2.png");

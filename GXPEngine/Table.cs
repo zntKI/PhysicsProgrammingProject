@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 public class Table : Sprite
 {
+    public int CountLineSegments
+        => lineSegments.Count;
+
     List<LineSegment> lineSegments;
 
     public Table(string filename, bool keepInCache = false, bool addCollider = false) : base(filename, keepInCache, addCollider)
@@ -42,4 +45,7 @@ public class Table : Sprite
             new LineSegment(new Vec2(48, 73), new Vec2(35, 60))
         };
     }
+
+    public LineSegment GetLineSegment(int i)
+        => lineSegments[i];
 }

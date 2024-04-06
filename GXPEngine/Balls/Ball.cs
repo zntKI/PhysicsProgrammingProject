@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 public class Ball : Sprite
 {
-    protected float radius;
+    public float radius;
     public Vec2 position;
 
     public Ball(Vec2 position) : base("", false, false)
