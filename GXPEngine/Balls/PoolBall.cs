@@ -53,7 +53,7 @@ public class PoolBall : Ball
         firstCollision = CheckForBoundaries(firstCollision);
         if (firstCollision != null)
         {
-            //ResolveCollision(firstCollision);
+            ResolveCollision(firstCollision);
         }
     }
 
@@ -173,6 +173,24 @@ public class PoolBall : Ball
         }
 
         return earliestColl;
+    }
+
+    void ResolveCollision(CollisionInfo coll)
+    {
+        if (coll.other is Ball)
+        {
+            Ball otherBall = (Ball)coll.other;
+
+            //TODO: Implement it fully applying Newton's laws for multiple moving objects
+
+            position = otherBall.position + coll.normal;
+            velocity.Reflect(coll.normal.Normalized(), bounciness);
+        }
+        else if (coll.other is LineSegment)
+        {
+            position = oldPosition + velocity * coll.timeOfImpact;
+            velocity.Reflect(coll.normal, bounciness);
+        }
     }
 
     void UpdateCoordinates()
