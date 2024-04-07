@@ -19,10 +19,11 @@ public class PoolBall : Ball
     {
         mass = 0.17f;
         bounciness = 0.95f;
-        friction = 0.06f; //Think of smth better
+        friction = 0.02f; //Think of smth better //0.06f - original
 
         SetOrigin(width / 2, height / 2);
-        scale /= 6f;
+        SetScaleXY(scale / 6f);
+        //scale /= 6f;
 
         radius = width / 2;
 
@@ -59,11 +60,11 @@ public class PoolBall : Ball
 
     CollisionInfo CheckForBalls(CollisionInfo earliestCollision)
     {
-        PoolBallManager ballManager = ((MyGame)game).ballManager;
+        Table table = ((MyGame)game).table;
 
-        for (int i = 0; i < ballManager.CountOfBalls; i++)
+        for (int i = 0; i < table.CountOfBalls; i++)
         {
-            PoolBall ball = ballManager.GetBall(i);
+            PoolBall ball = table.GetBall(i);
 
             if (ball != this)
             {

@@ -7,11 +7,21 @@ using System.Threading.Tasks;
 
 public class Table : Sprite
 {
+    public int CountOfBalls
+        => poolBalls.Count;
     public int CountLineSegments
         => lineSegments.Count;
+    public Vec2 CueBallSpawnPoint
+        => cueBallSpawnPoint;
 
     readonly Vec2 topLeftCorner;
+    readonly Vec2 cueBallSpawnPoint;
+
+    List<PoolBall> poolBalls;
     List<LineSegment> lineSegments;
+
+    //Pocket areas
+    List<Ball> pockets;
 
     public Table(string filename, bool keepInCache = false, bool addCollider = false) : base(filename, keepInCache, addCollider)
     {
@@ -20,8 +30,48 @@ public class Table : Sprite
         SetScaleXY(scale / 6f);
 
         topLeftCorner = new Vec2(x - width / 2, y - height / 2);
+        cueBallSpawnPoint = topLeftCorner + new Vec2(555, height / 2);
 
         AddLineSegments();
+        AddPocketAreas();
+
+        /*
+         float apexBallPos = new Vec2(width / 4, height / 2);
+         solid - new Vec2()
+         */
+    }
+
+    private void AddPoolBalls()
+    {
+        poolBalls = new List<PoolBall>();
+
+        Vec2 apexPoint = topLeftCorner + new Vec2(190, 214);
+        PoolBall ball = new PoolBall("Assets/ball_1.png", apexPoint);
+        AddPoolBall(ball);
+
+        float radius = ball.radius;
+        float dVecX = Mathf.Cos(Mathf.PI / 6) * 2 * radius;
+        float dVecY = Mathf.Sin(Mathf.PI / 6) * 2 * radius;
+        Vec2 vecRightLane = new Vec2(-dVecX, -dVecY);
+        Vec2 vecLeftLane = new Vec2(-dVecX, dVecY);
+        AddPoolBall(new PoolBall("Assets/ball_11.png", apexPoint + vecRightLane));
+        AddPoolBall(new PoolBall("Assets/ball_5.png", apexPoint + vecLeftLane));
+        AddPoolBall(new PoolBall("Assets/ball_2.png", apexPoint + 2 * vecRightLane));
+        AddPoolBall(new PoolBall("Assets/ball_10.png", apexPoint + 2 * vecLeftLane));
+        AddPoolBall(new PoolBall("Assets/ball_8.png", apexPoint + vecRightLane + vecLeftLane));
+        AddPoolBall(new PoolBall("Assets/ball_9.png", apexPoint + 3 * vecRightLane));
+        AddPoolBall(new PoolBall("Assets/ball_4.png", apexPoint + 3 * vecLeftLane));
+        AddPoolBall(new PoolBall("Assets/ball_7.png", apexPoint + 2 * vecRightLane + vecLeftLane));
+        AddPoolBall(new PoolBall("Assets/ball_14.png", apexPoint + 2 * vecLeftLane + vecRightLane));
+        AddPoolBall(new PoolBall("Assets/ball_6.png", apexPoint + 4 * vecRightLane));
+        AddPoolBall(new PoolBall("Assets/ball_12.png", apexPoint + 4 * vecLeftLane));
+        AddPoolBall(new PoolBall("Assets/ball_15.png", apexPoint + 3 * vecRightLane + vecLeftLane));
+        AddPoolBall(new PoolBall("Assets/ball_3.png", apexPoint + 3 * vecLeftLane + vecRightLane));
+        AddPoolBall(new PoolBall("Assets/ball_13.png", apexPoint + 2 * (vecRightLane + vecLeftLane)));
+
+        //Create the cue with the cue ball
+        Cue cue = new Cue("Assets/cue2.png");
+        game.AddChild(cue);
     }
 
     private void AddLineSegments()
@@ -49,6 +99,44 @@ public class Table : Sprite
         };
     }
 
+    private void AddPocketAreas()
+    {
+        pockets = new List<Ball>() { 
+            //From top left, clockwise
+            new Ball(topLeftCorner + new Vec2(35, 39), 20f),
+            new Ball(topLeftCorner + new Vec2(370, 29), 18f),
+            new Ball(topLeftCorner + new Vec2(708, 39), 20f),
+            new Ball(topLeftCorner + new Vec2(708, 383), 20f),
+            new Ball(topLeftCorner + new Vec2(370, 392), 18f),
+            new Ball(topLeftCorner + new Vec2(35, 383), 20f),
+        };
+    }
+
+    public void AddPoolBall(PoolBall ball)
+    {
+        game.AddChild(ball);
+
+        poolBalls.Add(ball);
+    }
+
+    public PoolBall GetBall(int i)
+        => poolBalls[i];
+
     public LineSegment GetLineSegment(int i)
         => lineSegments[i];
+
+    public Ball GetPocket(int i)
+        => pockets[i];
+
+    private void Update()
+    {
+        if (poolBalls == null)
+            AddPoolBalls();
+
+        //Step through balls
+        foreach (PoolBall poolBall in poolBalls)
+        {
+            poolBall.Step();
+        }
+    }
 }

@@ -42,7 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Balls\Ball.cs" />
-    <Compile Include="Balls\PoolBallManager.cs" />
     <Compile Include="Balls\PoolBall.cs" />
     <Compile Include="Components\CollisionInfo.cs" />
     <Compile Include="Components\LineSegment.cs" />

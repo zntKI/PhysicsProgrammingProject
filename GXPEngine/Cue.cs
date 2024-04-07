@@ -21,10 +21,7 @@ public class Cue : Sprite
 
     public Cue(string filename, bool keepInCache = false, bool addCollider = false) : base(filename, keepInCache, addCollider)
     {
-        Vec2 cueBallPosition = new Vec2(game.width / 2 + ((MyGame)game).table.width * 0.25f, game.height / 2);
-        cueBall = new PoolBall("Assets/ball_16.png", cueBallPosition);
-        game.AddChild(cueBall);
-        ((MyGame)game).ballManager.Add(cueBall);
+        Vec2 cueBallPosition = InitCueBall();
 
         SetOrigin(width + 100, height / 2);
         SetXY(game.width / 2, game.height / 2);
@@ -37,6 +34,15 @@ public class Cue : Sprite
 
         chargeMousePos = new Vec2();
         chargeMousePosNormal = new Vec2();
+    }
+
+    private Vec2 InitCueBall()
+    {
+        Vec2 cueBallPosition = ((MyGame)game).table.CueBallSpawnPoint + new Vec2(5, 0);
+        cueBall = new PoolBall("Assets/ball_16.png", cueBallPosition);
+        cueBall.name = "CueBall";
+        ((MyGame)game).table.AddPoolBall(cueBall);
+        return cueBallPosition;
     }
 
     void Update()
