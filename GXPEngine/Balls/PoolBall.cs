@@ -15,6 +15,9 @@ public class PoolBall : Ball
 
     public Vec2 velocity;
 
+    public bool shouldStartShrinking = false;
+    float originalScale;
+
     public PoolBall(string filename, Vec2 position, bool keepInCache = false, bool addCollider = false) : base(filename, keepInCache, addCollider)
     {
         mass = 0.17f;
@@ -23,7 +26,7 @@ public class PoolBall : Ball
 
         SetOrigin(width / 2, height / 2);
         SetScaleXY(scale / 6f);
-        //scale /= 6f;
+        originalScale = scale;
 
         radius = width / 2;
 
@@ -50,11 +53,47 @@ public class PoolBall : Ball
         position += velocity;
 
         CollisionInfo firstCollision = null;
-        firstCollision =  CheckForBalls(firstCollision);
+        firstCollision = CheckForBalls(firstCollision);
         firstCollision = CheckForBoundaries(firstCollision);
         if (firstCollision != null)
         {
             ResolveCollision(firstCollision);
+        }
+
+        CheckPocketsCollision();
+    }
+
+    void CheckPocketsCollision()
+    {
+        Table table = ((MyGame)game).table;
+
+        for (int i = 0; i < 6; i++)
+        {
+            Ball pocket = table.GetPocket(i);
+
+            Vec2 relativePosition = oldPosition - pocket.position;
+            float a = Mathf.Pow(velocity.Magnitude(), 2);
+            float b = 2 * Vec2.Dot(relativePosition, velocity);
+            float c = Mathf.Pow(relativePosition.Magnitude(), 2) - Mathf.Pow(pocket.radius * 0.6f, 2);
+            if (a < 0.001f)
+            {
+                continue;
+            }
+            float D = Mathf.Pow(b, 2) - 4 * a * c;
+            if (D < 0)
+            {
+                continue;
+            }
+            float toi = (-b - Mathf.Sqrt(D)) / (2 * a);
+            if (toi < 1 && toi >= 0)
+            {
+                //velocity.SetXY(0, 0);
+                position = pocket.position;
+
+                shouldStartShrinking = true;
+                table.RemoveBall(this);
+                return;
+            }
         }
     }
 
@@ -198,5 +237,37 @@ public class PoolBall : Ball
     {
         x = position.x;
         y = position.y;
+    }
+
+    void Update()
+    {
+        if (shouldStartShrinking)
+        {
+            Shrink();
+        }
+    }
+
+    void Shrink()
+    {
+        if (scale < originalScale / 2)
+        {
+            if (name != "CueBall")
+            {
+                Destroy();
+            }
+            else if (((MyGame)game).table.HasAllBallsStopped())
+            {
+                Table table = ((MyGame)game).table;
+
+                scale = originalScale;
+                velocity.SetXY(0, 0);
+                position = table.CueBallSpawnPoint;
+                table.AddPoolBall(this);
+
+                shouldStartShrinking = false;
+            }
+        }
+        else
+            SetScaleXY(scale * 0.98f);
     }
 }

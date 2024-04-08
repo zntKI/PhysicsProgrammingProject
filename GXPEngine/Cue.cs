@@ -128,7 +128,10 @@ public class Cue : Sprite
 
     private void CheckCueBall()
     {
-        if (alpha == 0 && cueBall.velocity.Magnitude() < 0.01f)
+        Table table = ((MyGame)game).table;
+        if (alpha == 0 &&
+            ((table.ContainsBall(cueBall) && table.HasAllBallsStopped())//If cue ball is currently on the table
+            || cueBall.velocity.Magnitude() < 0.01f))//If the cue ball is currently not on the table
         {
             alpha = 1;
             position.SetXY(cueBall.position);

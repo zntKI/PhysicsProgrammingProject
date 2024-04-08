@@ -34,11 +34,6 @@ public class Table : Sprite
 
         AddLineSegments();
         AddPocketAreas();
-
-        /*
-         float apexBallPos = new Vec2(width / 4, height / 2);
-         solid - new Vec2()
-         */
     }
 
     private void AddPoolBalls()
@@ -104,11 +99,11 @@ public class Table : Sprite
         pockets = new List<Ball>() { 
             //From top left, clockwise
             new Ball(topLeftCorner + new Vec2(35, 39), 20f),
-            new Ball(topLeftCorner + new Vec2(370, 29), 18f),
-            new Ball(topLeftCorner + new Vec2(708, 39), 20f),
-            new Ball(topLeftCorner + new Vec2(708, 383), 20f),
-            new Ball(topLeftCorner + new Vec2(370, 392), 18f),
-            new Ball(topLeftCorner + new Vec2(35, 383), 20f),
+            new Ball(topLeftCorner + new Vec2(375, 29), 18f),
+            new Ball(topLeftCorner + new Vec2(717, 39), 20f),
+            new Ball(topLeftCorner + new Vec2(717, 388), 20f),
+            new Ball(topLeftCorner + new Vec2(375, 396), 18f),
+            new Ball(topLeftCorner + new Vec2(35, 388), 20f),
         };
     }
 
@@ -122,6 +117,31 @@ public class Table : Sprite
     public PoolBall GetBall(int i)
         => poolBalls[i];
 
+    public void RemoveBall(PoolBall ball)
+        => poolBalls.Remove(ball);
+
+    public bool ContainsBall(PoolBall ball)
+        => poolBalls.Contains(ball);
+
+    public bool HasAllBallsStopped()
+    {
+        bool allStopped = false;
+        foreach (PoolBall ball in poolBalls)
+        {
+            if (ball.velocity.Magnitude() < 0.01f)
+            {
+                allStopped = true;
+            }
+            else
+            {
+                allStopped = false;
+                break;
+            }
+        }
+
+        return allStopped;
+    }
+
     public LineSegment GetLineSegment(int i)
         => lineSegments[i];
 
@@ -134,9 +154,9 @@ public class Table : Sprite
             AddPoolBalls();
 
         //Step through balls
-        foreach (PoolBall poolBall in poolBalls)
+        for (int i = 0; i < poolBalls.Count; i++)
         {
-            poolBall.Step();
+            poolBalls[i].Step();
         }
     }
 }
