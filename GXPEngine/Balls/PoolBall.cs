@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 public class PoolBall : Ball
 {
-    protected readonly float mass; //kgs
-    protected readonly float bounciness;
+    public readonly float mass; //kgs
+    public readonly float bounciness;
     protected readonly float friction;
 
     public Vec2 oldPosition;
@@ -221,10 +221,29 @@ public class PoolBall : Ball
         {
             Ball otherBall = (Ball)coll.other;
 
-            //TODO: Implement it fully applying Newton's laws for multiple moving objects
-
+            //Pos reset
             position = otherBall.position + coll.normal;
-            velocity.Reflect(coll.normal.Normalized(), bounciness);
+
+            //Velocity reflection
+            if (otherBall is PoolBall)
+            {
+                PoolBall otherPoolBall = (PoolBall)otherBall;
+
+                //Checks if moving away
+                Vec2 relPos = position - otherPoolBall.position;
+                Vec2 relVel = velocity - otherPoolBall.velocity;
+                if (Vec2.Dot(relPos, relVel) >= 0)
+                    return;
+
+                Vec2 COMvec2 = ((mass * velocity) + (otherPoolBall.mass * otherPoolBall.velocity)) * (1 / (mass + otherPoolBall.mass));
+
+                velocity.Reflect(coll.normal.Normalized(), COMvec2, bounciness);
+                otherPoolBall.velocity.Reflect(coll.normal.Normalized() * -1f, COMvec2, otherPoolBall.bounciness);
+            }
+            else
+            {
+                velocity.Reflect(coll.normal.Normalized(), bounciness);
+            }
         }
         else if (coll.other is LineSegment)
         {

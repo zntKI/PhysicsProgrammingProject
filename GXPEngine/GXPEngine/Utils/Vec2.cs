@@ -91,6 +91,9 @@ namespace GXPEngine
         public void Reflect(Vec2 unitNormal, float C = 1f)
         => this = this - (1 + C) * Dot(this, unitNormal) * unitNormal;
 
+        public void Reflect(Vec2 unitNormal, Vec2 COMvec2, float C = 1f)
+        => this = this - (1 + C) * Dot(this - COMvec2, unitNormal) * unitNormal;
+
         public static Vec2 operator +(Vec2 left, Vec2 right)
             => new Vec2(left.x + right.x, left.y + right.y);
 
