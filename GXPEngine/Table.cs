@@ -73,24 +73,24 @@ public class Table : Sprite
     {
         lineSegments = new List<LineSegment>()
         {
-            new LineSegment(topLeftCorner + new Vec2(55, 35), topLeftCorner + new Vec2(69, 48)),
+            new LineSegment(topLeftCorner + new Vec2(55, 35), topLeftCorner + new Vec2(69, 48), true),
             new LineSegment(topLeftCorner + new Vec2(69, 48), topLeftCorner + new Vec2(350, 48), true, true),
-            new LineSegment(topLeftCorner + new Vec2(350, 48), topLeftCorner + new Vec2(356, 35)),
-            new LineSegment(topLeftCorner + new Vec2(392, 35), topLeftCorner + new Vec2(398, 48)),
+            new LineSegment(topLeftCorner + new Vec2(350, 48), topLeftCorner + new Vec2(356, 35), false, true),
+            new LineSegment(topLeftCorner + new Vec2(392, 35), topLeftCorner + new Vec2(398, 48), true),
             new LineSegment(topLeftCorner + new Vec2(398, 48), topLeftCorner + new Vec2(682, 48), true, true),
-            new LineSegment(topLeftCorner + new Vec2(682, 48), topLeftCorner + new Vec2(696, 35)),
-            new LineSegment(topLeftCorner + new Vec2(722, 60), topLeftCorner + new Vec2(709, 73)),
+            new LineSegment(topLeftCorner + new Vec2(682, 48), topLeftCorner + new Vec2(696, 35), false, true),
+            new LineSegment(topLeftCorner + new Vec2(722, 60), topLeftCorner + new Vec2(709, 73), true),
             new LineSegment(topLeftCorner + new Vec2(709, 73), topLeftCorner + new Vec2(709, 352), true, true),
-            new LineSegment(topLeftCorner + new Vec2(709, 352), topLeftCorner + new Vec2(722, 366)),
-            new LineSegment(topLeftCorner + new Vec2(696, 391), topLeftCorner + new Vec2(682, 378)),
+            new LineSegment(topLeftCorner + new Vec2(709, 352), topLeftCorner + new Vec2(722, 366), false, true),
+            new LineSegment(topLeftCorner + new Vec2(696, 391), topLeftCorner + new Vec2(682, 378), true),
             new LineSegment(topLeftCorner + new Vec2(682, 378), topLeftCorner + new Vec2(398, 378), true, true),
-            new LineSegment(topLeftCorner + new Vec2(398, 378), topLeftCorner + new Vec2(392, 391)),
-            new LineSegment(topLeftCorner + new Vec2(356, 391), topLeftCorner + new Vec2(351, 378)),
+            new LineSegment(topLeftCorner + new Vec2(398, 378), topLeftCorner + new Vec2(392, 391), false, true),
+            new LineSegment(topLeftCorner + new Vec2(356, 391), topLeftCorner + new Vec2(351, 378), true),
             new LineSegment(topLeftCorner + new Vec2(351, 378), topLeftCorner + new Vec2(70, 378), true, true),
-            new LineSegment(topLeftCorner + new Vec2(70, 378), topLeftCorner + new Vec2(56, 391)),
-            new LineSegment(topLeftCorner + new Vec2(35, 366), topLeftCorner + new Vec2(48, 352)),
+            new LineSegment(topLeftCorner + new Vec2(70, 378), topLeftCorner + new Vec2(56, 391), false, true),
+            new LineSegment(topLeftCorner + new Vec2(35, 366), topLeftCorner + new Vec2(48, 352), true),
             new LineSegment(topLeftCorner + new Vec2(48, 352), topLeftCorner + new Vec2(48, 73), true, true),
-            new LineSegment(topLeftCorner + new Vec2(48, 73), topLeftCorner + new Vec2(35, 60))
+            new LineSegment(topLeftCorner + new Vec2(48, 73), topLeftCorner + new Vec2(35, 60), false, true)
         };
     }
 
