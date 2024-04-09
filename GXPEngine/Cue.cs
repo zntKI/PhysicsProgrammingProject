@@ -18,7 +18,7 @@ public class Cue : Sprite
     bool isCharging = false;
     Vec2 chargePosition;
     Vec2 chargeMousePos;
-    Vec2 chargeMousePosNormal;
+    Vec2 vecCueDirection;
     float chargeDistance;
 
     float chargeOffsetAmount;
@@ -35,11 +35,12 @@ public class Cue : Sprite
 
         this.position = cueBallPosition;
         UpdateCoordinates();
+        chargePosition = position;
 
         mousePosition = new Vec2(Input.mouseX, Input.mouseY);
 
         chargeMousePos = new Vec2();
-        chargeMousePosNormal = new Vec2();
+        vecCueDirection = new Vec2();
 
         chargeOffsetAmount = 10f;
     }
@@ -120,22 +121,27 @@ public class Cue : Sprite
         {
             SlightlyCharge(false);
         }
+        else if (Input.GetKeyDown(Key.ENTER))
+        {
+            vecCueDirection = Vec2.GetUnitVectorDeg(rotation);
+            Release();
+        }
     }
 
     private void HandleBallSwitch(bool clockwise)
     {
-        //Prepares variables in case charging takes place
-        if (chargeDistance == 0f && chargePosition == new Vec2())
-        {
-            chargePosition = position;
-        }
+        ////Prepares variables in case charging takes place
+        //if (chargeDistance == 0f && chargePosition == new Vec2())
+        //{
+        //    chargePosition = position;
+        //}
 
         //Contains both the current closest ball with the angle between it and the last cue position
         Tuple<PoolBall, float> switchBall = new Tuple<PoolBall, float>(null, 0f);
 
         Table table = ((MyGame)game).table;
 
-        Vec2 vecCueDirection = Vec2.GetUnitVectorDeg(rotation);
+        vecCueDirection = Vec2.GetUnitVectorDeg(rotation);
         Vec2 normal = clockwise ? vecCueDirection.Normal() : vecCueDirection.Normal() * -1f;
         for (int i = 0; i < table.CountOfBalls; i++)
         {
@@ -179,7 +185,7 @@ public class Cue : Sprite
 
     private void SlightlyCharge(bool up)
     {
-        Vec2 vecCueDirection = Vec2.GetUnitVectorDeg(rotation);
+        vecCueDirection = Vec2.GetUnitVectorDeg(rotation);
         if (up)
         {
             position += (vecCueDirection * -1f) * chargeOffsetAmount;
@@ -224,9 +230,8 @@ public class Cue : Sprite
         if (!isCharging && Input.GetMouseButtonDown(0))
         {
             isCharging = true;
-            chargePosition = position;
             chargeMousePos = mousePosition;
-            chargeMousePosNormal = (chargeMousePos - position).Normalized();
+            vecCueDirection = Vec2.GetUnitVectorDeg(rotation);
         }
         if (Input.GetMouseButtonUp(0))
         {
@@ -243,11 +248,11 @@ public class Cue : Sprite
     private void Charge()
     {
         Vec2 vecToChargeMousePos = chargeMousePos - mousePosition;
-        chargeDistance = Vec2.Dot(vecToChargeMousePos, chargeMousePosNormal);
+        chargeDistance = Vec2.Dot(vecToChargeMousePos, vecCueDirection);
 
         if (chargeDistance > 0)
         {
-            position = chargePosition - chargeDistance * chargeMousePosNormal;
+            position = chargePosition - chargeDistance * vecCueDirection;
         }
     }
 
@@ -261,12 +266,8 @@ public class Cue : Sprite
         {
             //Launch
             alpha = 0;
-            cueBall.velocity = chargeMousePosNormal * chargeDistance;
+            cueBall.velocity = vecCueDirection * chargeDistance;
         }
-
-        //Reset just in case if the aim mode gets switched
-        chargeDistance = 0f;
-        chargePosition.SetXY(0, 0);
     }
 
     private void CheckCueBallStopped()
@@ -278,6 +279,9 @@ public class Cue : Sprite
         {
             alpha = 1;
             position.SetXY(cueBall.position);
+
+            chargePosition = position;
+            chargeDistance = 0f;
         }
     }
 
