@@ -98,6 +98,14 @@ public class Cue : Sprite
         {
             HandleBallSwitch(true);
         }
+        else if (Input.GetKeyDown(Key.LEFT))
+        {
+            AdjustAimAngle(false);
+        }
+        else if (Input.GetKeyDown(Key.RIGHT))
+        {
+            AdjustAimAngle(true);
+        }
     }
 
     private void HandleBallSwitch(bool clockwise)
@@ -131,6 +139,11 @@ public class Cue : Sprite
 
         //Rotate cue towards the nearest found ball
         rotation = clockwise ? rotation + switchBall.Item2 : rotation - switchBall.Item2;
+    }
+
+    private void AdjustAimAngle(bool clockwise)
+    {
+        rotation = clockwise ? rotation + 1 : rotation - 1;
     }
 
     private void UpdateMousePosition()
