@@ -114,6 +114,9 @@ namespace GXPEngine
         public static float Dot(Vec2 firstVec2, Vec2 secondVec2)
         => (firstVec2.x * secondVec2.x) + (firstVec2.y * secondVec2.y);
 
+        public static float AngleBetweenVec(Vec2 first, Vec2 second)
+            => Mathf.Abs(first.GetAngleDegrees() - second.GetAngleDegrees());
+
         public static float Deg2Rad(float deg)
             => deg * Mathf.PI / 180;
         public static float Rad2Deg(float rad)
