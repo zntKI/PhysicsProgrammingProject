@@ -100,6 +100,12 @@ namespace GXPEngine
         public static Vec2 operator -(Vec2 left, Vec2 right)
             => new Vec2(left.x - right.x, left.y - right.y);
 
+        public static bool operator ==(Vec2 left, Vec2 right)
+            => (left.x == right.x) && (left.y == right.y);
+
+        public static bool operator !=(Vec2 left, Vec2 right)
+            => !(left == right);
+
         public static Vec2 operator *(float scalar, Vec2 vec2)
             => new Vec2(scalar * vec2.x, scalar * vec2.y);
 
