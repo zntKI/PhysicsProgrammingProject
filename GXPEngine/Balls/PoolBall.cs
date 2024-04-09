@@ -22,7 +22,7 @@ public class PoolBall : Ball
     {
         mass = 0.17f;
         bounciness = 0.95f;
-        friction = 0.02f; //Think of smth better //0.06f - original
+        friction = 0.06f; //Think of smth better //0.06f - original
 
         SetOrigin(width / 2, height / 2);
         SetScaleXY(scale / 6f);
@@ -270,14 +270,14 @@ public class PoolBall : Ball
     {
         if (scale < originalScale / 2)
         {
+            Table table = ((MyGame)game).table;
             if (name != "CueBall")
             {
+                table.RemoveBall(this);
                 Destroy();
             }
-            else if (((MyGame)game).table.HasAllBallsStopped())
+            else if (table.HasAllBallsStopped())
             {
-                Table table = ((MyGame)game).table;
-
                 scale = originalScale;
                 velocity.SetXY(0, 0);
                 position = table.CueBallSpawnPoint;
