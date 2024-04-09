@@ -45,7 +45,7 @@ public class Cue : Sprite
         chargeOffsetAmount = 10f;
     }
 
-    private Vec2 InitCueBall()
+    Vec2 InitCueBall()
     {
         Vec2 cueBallPosition = ((MyGame)game).table.CueBallSpawnPoint + new Vec2(5, 0);
         cueBall = new PoolBall("Assets/ball_16.png", cueBallPosition);
@@ -71,8 +71,6 @@ public class Cue : Sprite
             case AimMode.Automatic:
                 CheckForKeyboardInput();
                 break;
-            case AimMode.Advanced:
-                break;
             default:
                 break;
         }
@@ -81,7 +79,7 @@ public class Cue : Sprite
         DrawGuideLine();
     }
 
-    private void CheckForInputModeChange()
+    void CheckForInputModeChange()
     {
         if (aimMode == AimMode.Manual && (Input.GetKeyDown(Key.A) || Input.GetKeyDown(Key.D)))
         {
@@ -95,7 +93,8 @@ public class Cue : Sprite
         }
     }
 
-    private void CheckForKeyboardInput()
+    //Methods for auto aim mode:
+    void CheckForKeyboardInput()
     {
         if (Input.GetKeyDown(Key.A))
         {
@@ -128,14 +127,8 @@ public class Cue : Sprite
         }
     }
 
-    private void HandleBallSwitch(bool clockwise)
+    void HandleBallSwitch(bool clockwise)
     {
-        ////Prepares variables in case charging takes place
-        //if (chargeDistance == 0f && chargePosition == new Vec2())
-        //{
-        //    chargePosition = position;
-        //}
-
         //Contains both the current closest ball with the angle between it and the last cue position
         Tuple<PoolBall, float> switchBall = new Tuple<PoolBall, float>(null, 0f);
 
@@ -175,7 +168,7 @@ public class Cue : Sprite
         }
     }
 
-    private void AdjustAimAngle(bool clockwise)
+    void AdjustAimAngle(bool clockwise)
     {
         rotation = clockwise ? rotation + 1 : rotation - 1;
 
@@ -183,7 +176,7 @@ public class Cue : Sprite
         position.RotateAroundDegrees(chargePosition, clockwise ? 1f : -1f);
     }
 
-    private void SlightlyCharge(bool up)
+    void SlightlyCharge(bool up)
     {
         vecCueDirection = Vec2.GetUnitVectorDeg(rotation);
         if (up)
@@ -201,18 +194,13 @@ public class Cue : Sprite
         chargeDistance = (position - chargePosition).Magnitude();
     }
 
-    private void UpdateMousePosition()
+    //Methods for manual aim mode:
+    void UpdateMousePosition()
     {
         mousePosition.SetXY(Input.mouseX, Input.mouseY);
     }
 
-    private void UpdateCoordinates()
-    {
-        x = position.x;
-        y = position.y;
-    }
-
-    private void Rotate()
+    void Rotate()
     {
         if (isCharging)
             return;
@@ -223,7 +211,7 @@ public class Cue : Sprite
         rotation = deg;
     }
 
-    private void CheckForMouseInput()
+    void CheckForMouseInput()
     {
         //Check if mouse button has been pressed in the current frame
         //  Yes -> isCharging = true;
@@ -245,7 +233,7 @@ public class Cue : Sprite
         }
     }
 
-    private void Charge()
+    void Charge()
     {
         Vec2 vecToChargeMousePos = chargeMousePos - mousePosition;
         chargeDistance = Vec2.Dot(vecToChargeMousePos, vecCueDirection);
@@ -256,7 +244,8 @@ public class Cue : Sprite
         }
     }
 
-    private void Release()
+    //Common methods:
+    void Release()
     {
         if (chargeDistance <= 0)
         {
@@ -270,7 +259,7 @@ public class Cue : Sprite
         }
     }
 
-    private void CheckCueBallStopped()
+    void CheckCueBallStopped()
     {
         Table table = ((MyGame)game).table;
         if (alpha == 0 &&
@@ -285,7 +274,13 @@ public class Cue : Sprite
         }
     }
 
-    private void DrawGuideLine()
+    void UpdateCoordinates()
+    {
+        x = position.x;
+        y = position.y;
+    }
+
+    void DrawGuideLine()
     {
         if (alpha != 0)
         {
@@ -296,5 +291,5 @@ public class Cue : Sprite
 
 enum AimMode
 {
-    Manual, Automatic, Advanced
+    Manual, Automatic
 }
