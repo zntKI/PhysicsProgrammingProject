@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 public class Table : Sprite
 {
@@ -18,6 +19,12 @@ public class Table : Sprite
         => lineSegments.Count;
     public Vec2 CueBallSpawnPoint
         => cueBallSpawnPoint;
+    public Vec2 CueBallMarkerOffset
+        => new Vec2(cueBallMarker.x, cueBallMarker.y) - new Vec2(cueBallDisplay.x, cueBallDisplay.y);
+
+    public float CueBallMarkerMaxOffset
+        => cueBallDisplay.width / 2 - cueBallMarker.width / 2;
+
 
     readonly Vec2 topLeftCorner;
     readonly Vec2 cueBallSpawnPoint;
@@ -27,6 +34,9 @@ public class Table : Sprite
 
     //Pocket areas
     List<Ball> pockets;
+
+    EasyDraw cueBallDisplay;
+    EasyDraw cueBallMarker;
 
     public Table(string filename, bool keepInCache = false, bool addCollider = false) : base(filename, keepInCache, addCollider)
     {
@@ -44,6 +54,8 @@ public class Table : Sprite
 
         AddLineSegments();
         AddPocketAreas();
+
+        AddEasyDraws();
     }
 
     private void AddPoolBalls()
@@ -77,6 +89,13 @@ public class Table : Sprite
         //Create the cue with the cue ball
         Cue cue = new Cue("Assets/cue2.png");
         game.AddChild(cue);
+    }
+
+    public void AddPoolBall(PoolBall ball)
+    {
+        game.AddChild(ball);
+
+        poolBalls.Add(ball);
     }
 
     private void AddLineSegments()
@@ -117,12 +136,22 @@ public class Table : Sprite
         };
     }
 
-    public void AddPoolBall(PoolBall ball)
+    private void AddEasyDraws()
     {
-        game.AddChild(ball);
+        cueBallDisplay = new EasyDraw("Assets/ball_16.png", false);
+        cueBallDisplay.SetOrigin(cueBallDisplay.width / 2, cueBallDisplay.height / 2);
+        cueBallDisplay.SetScaleXY(cueBallDisplay.scale / 2);
+        cueBallDisplay.SetXY(game.width - cueBallDisplay.width / 2, 0 + cueBallDisplay.height / 2);
+        game.AddChild(cueBallDisplay);
 
-        poolBalls.Add(ball);
+        cueBallMarker = new EasyDraw("Assets/ball_marker.png", false);
+        cueBallMarker.SetOrigin(cueBallMarker.width / 2, cueBallMarker.height / 2);
+        cueBallMarker.SetScaleXY(cueBallDisplay.scale / 4);
+        cueBallMarker.SetXY(cueBallDisplay.x, cueBallDisplay.y);
+        game.AddChild(cueBallMarker);
     }
+
+
 
     public PoolBall GetBall(int i)
         => poolBalls[i];
@@ -158,15 +187,57 @@ public class Table : Sprite
     public Ball GetPocket(int i)
         => pockets[i];
 
+
+
     private void Update()
     {
         if (poolBalls == null)
             AddPoolBalls();
+
+        CheckForInput();
 
         //Step through balls
         for (int i = 0; i < poolBalls.Count; i++)
         {
             poolBalls[i].Step();
         }
+    }
+
+    private void CheckForInput()
+    {
+        if (Input.GetKey(Key.LEFT))
+        {
+            MoveMarker(new Vec2(-1, 0));
+        }
+        else if (Input.GetKey(Key.RIGHT))
+        {
+            MoveMarker(new Vec2(1, 0));
+        }
+        else if (Input.GetKey(Key.UP))
+        {
+            MoveMarker(new Vec2(0, -1));
+        }
+        else if (Input.GetKey(Key.DOWN))
+        {
+            MoveMarker(new Vec2(0, 1));
+        }
+    }
+
+    private void MoveMarker(Vec2 offset)
+    {
+        cueBallMarker.x += offset.x;
+        cueBallMarker.y += offset.y;
+        float distance = CueBallMarkerOffset.Magnitude();
+        if (distance > cueBallDisplay.width / 2 - cueBallMarker.width / 2)
+        {
+            cueBallMarker.x -= offset.x;
+            cueBallMarker.y -= offset.y;
+        }
+    }
+
+    public void ResetCueMarkerPos()
+    {
+        cueBallMarker.x = cueBallDisplay.x;
+        cueBallMarker.y = cueBallDisplay.y;
     }
 }

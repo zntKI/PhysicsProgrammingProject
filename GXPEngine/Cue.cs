@@ -20,6 +20,7 @@ public class Cue : Sprite
     Vec2 chargeMousePos;
     Vec2 vecCueDirection;
     float chargeDistance;
+    const float chargeDistanceMax = 100f;
 
     float chargeOffsetAmount;
 
@@ -81,7 +82,7 @@ public class Cue : Sprite
 
     void CheckForInputModeChange()
     {
-        if (aimMode == AimMode.Manual && (Input.GetKeyDown(Key.A) || Input.GetKeyDown(Key.D)))
+        if (aimMode == AimMode.Manual && (Input.GetKeyDown(Key.Q) || Input.GetKeyDown(Key.E)))
         {
             aimMode = AimMode.Automatic;
         }
@@ -96,27 +97,27 @@ public class Cue : Sprite
     //Methods for auto aim mode:
     void CheckForKeyboardInput()
     {
-        if (Input.GetKeyDown(Key.A))
+        if (Input.GetKeyDown(Key.Q))
         {
             HandleBallSwitch(false);
         }
-        else if (Input.GetKeyDown(Key.D))
+        else if (Input.GetKeyDown(Key.E))
         {
             HandleBallSwitch(true);
         }
-        else if (Input.GetKeyDown(Key.LEFT))
+        else if (Input.GetKeyDown(Key.A))
         {
             AdjustAimAngle(false);
         }
-        else if (Input.GetKeyDown(Key.RIGHT))
+        else if (Input.GetKeyDown(Key.D))
         {
             AdjustAimAngle(true);
         }
-        else if (Input.GetKeyDown(Key.UP))
+        else if (Input.GetKeyDown(Key.W))
         {
             SlightlyCharge(true);
         }
-        else if (Input.GetKeyDown(Key.DOWN))
+        else if (Input.GetKeyDown(Key.S))
         {
             SlightlyCharge(false);
         }
@@ -163,7 +164,7 @@ public class Cue : Sprite
 
         //If charging do an additional rotation
         if (chargeDistance != 0f)
-        { 
+        {
             position.RotateAroundDegrees(cueBall.position, clockwise ? switchBall.Item2 : -switchBall.Item2);
         }
     }
@@ -179,19 +180,19 @@ public class Cue : Sprite
     void SlightlyCharge(bool up)
     {
         vecCueDirection = Vec2.GetUnitVectorDeg(rotation);
-        if (up)
+        Vec2 newPos = position + (up ? vecCueDirection * -1f : vecCueDirection) * chargeOffsetAmount;
+        if (Vec2.Dot(newPos - chargePosition, vecCueDirection) > 0) //Constraints it to not go past the minimum
         {
-            position += (vecCueDirection * -1f) * chargeOffsetAmount;
+            chargeDistance = 0f;
         }
         else
         {
-            Vec2 newPos = position + vecCueDirection * chargeOffsetAmount;
-            if (Vec2.Dot(newPos - chargePosition, vecCueDirection) <= 0) //Constraints it to not go past the minimum
-            {
-                position = newPos;
-            }
+            chargeDistance = (newPos - chargePosition).Magnitude();
+
+            chargeDistance = Mathf.Clamp(chargeDistance, 0f, chargeDistanceMax);
+
+            position = chargePosition + (vecCueDirection * -1f) * chargeDistance;
         }
-        chargeDistance = (position - chargePosition).Magnitude();
     }
 
     //Methods for manual aim mode:
@@ -238,10 +239,9 @@ public class Cue : Sprite
         Vec2 vecToChargeMousePos = chargeMousePos - mousePosition;
         chargeDistance = Vec2.Dot(vecToChargeMousePos, vecCueDirection);
 
-        if (chargeDistance > 0)
-        {
-            position = chargePosition - chargeDistance * vecCueDirection;
-        }
+        chargeDistance = Mathf.Clamp(chargeDistance, 0f, chargeDistanceMax);
+
+        position = chargePosition - chargeDistance * vecCueDirection;
     }
 
     //Common methods:
@@ -255,7 +255,29 @@ public class Cue : Sprite
         {
             //Launch
             alpha = 0;
+
+            Table table = ((MyGame)game).table;
+
+            //TODO: Refactor this!:
+
+            //TODO: Map the charge distance to a reasonable shot power
             cueBall.velocity = vecCueDirection * chargeDistance;
+            Vec2 oiginalSpinDirection = table.CueBallMarkerOffset;
+            cueBall.spin = (oiginalSpinDirection.y == 0 ? oiginalSpinDirection.FlipHorizontally() : oiginalSpinDirection) * 0.1f;//Does the check to recreate more realistic simulation
+            cueBall.spin.RotateDegrees(90 + rotation);
+
+            if (cueBall.spin.x != 0f && oiginalSpinDirection.y == 0)
+            {
+                float sideSpinAmount = Mathf.Abs(oiginalSpinDirection.FlipHorizontally().x);
+                float offsetDegs = Mathf.Map(sideSpinAmount, 0f, table.CueBallMarkerMaxOffset, 0f, 60f);
+                Vec2 newSpin = new Vec2(cueBall.spin);
+                newSpin.RotateDegrees(cueBall.spin.x < 0f ? (90 - offsetDegs) : -(90 - offsetDegs));
+
+                //TODO: Map the chargeDistance to the amount of spin as well
+
+                cueBall.velocity += newSpin;
+                cueBall.spin = cueBall.spin.FlipHorizontally();//Bounces of the rail more realisticly
+            }
         }
     }
 
@@ -271,6 +293,9 @@ public class Cue : Sprite
 
             chargePosition = position;
             chargeDistance = 0f;
+
+            cueBall.spin.SetXY(0, 0);
+            table.ResetCueMarkerPos();
         }
     }
 

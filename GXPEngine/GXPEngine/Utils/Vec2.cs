@@ -17,6 +17,12 @@ namespace GXPEngine
             y = pY;
         }
 
+        public Vec2(Vec2 vec2)
+        {
+            x = vec2.x;
+            y = vec2.y;
+        }
+
         public float Magnitude()
             => Mathf.Sqrt(x * x + y * y);
 
@@ -87,6 +93,12 @@ namespace GXPEngine
             vecToRotate += point;
             this = vecToRotate;
         }
+
+        public Vec2 FlipHorizontally()
+            => new Vec2(x *= -1f, y);
+
+        public Vec2 FlipVertically()
+            => new Vec2(x, y *= -1f);
 
         public void Reflect(Vec2 unitNormal, float C = 1f)
         => this = this - (1 + C) * Dot(this, unitNormal) * unitNormal;

@@ -9,11 +9,14 @@ public class PoolBall : Ball
 {
     public readonly float mass; //kgs
     public readonly float bounciness;
-    protected readonly float friction;
+    public readonly float friction;
 
     public Vec2 oldPosition;
 
     public Vec2 velocity;
+    public Vec2 spin;
+
+    Vec2 acceleration;
 
     public bool shouldStartShrinking = false;
     float originalScale;
@@ -22,7 +25,7 @@ public class PoolBall : Ball
     {
         mass = 0.17f;
         bounciness = 0.95f;
-        friction = 0.06f; //Think of smth better //0.06f - original
+        friction = 0.03f; //Think of smth better //0.06f - original
 
         SetOrigin(width / 2, height / 2);
         SetScaleXY(scale / 6f);
@@ -40,6 +43,10 @@ public class PoolBall : Ball
     public void Step()
     {
         oldPosition = position;
+        if (name == "CueBall")
+        {
+            Console.WriteLine("IN");
+        }
 
         Move();
 
@@ -48,7 +55,6 @@ public class PoolBall : Ball
 
     protected void Move()
     {
-        //Add acceleration instead
         velocity *= (1 - friction);
         position += velocity;
 
@@ -249,6 +255,14 @@ public class PoolBall : Ball
         {
             position = oldPosition + velocity * coll.timeOfImpact;
             velocity.Reflect(coll.normal, bounciness);
+        }
+
+        if (name == "CueBall" && spin != new Vec2(0, 0))
+        {
+            acceleration = spin;
+            velocity += acceleration;
+
+            spin.SetXY(0, 0);
         }
     }
 
