@@ -284,7 +284,40 @@ public class Cue : Sprite
     {
         if (alpha != 0)
         {
-            Gizmos.DrawRayAngle(cueBall.position.x, cueBall.position.y, rotation, 500);
+            Table table = ((MyGame)game).table;
+
+            vecCueDirection = Vec2.GetUnitVectorDeg(rotation);
+            Vec2 dVec = vecCueDirection * 1000f;
+
+            Vec2 newPos = position + dVec;
+            List<float> tois = new List<float>(4);
+
+            float currentToi;
+            if (newPos.y < table.topBorderY)
+            {
+                currentToi = (position.y - table.topBorderY) / (position.y - newPos.y);
+                tois.Add(currentToi);
+            }
+            if (newPos.x > table.rightBorderX)
+            {
+                currentToi = (table.rightBorderX - position.x) / (newPos.x - position.x);
+                tois.Add(currentToi);
+            }
+            if (newPos.y > table.bottomBorderY)
+            {
+                currentToi = (table.bottomBorderY - position.y) / (newPos.y - position.y);
+                tois.Add(currentToi);
+            }
+            if (newPos.x < table.leftBorderX)
+            {
+                currentToi = (position.x - table.leftBorderX) / (position.x - newPos.x);
+                tois.Add(currentToi);
+            }
+
+            float minToi = tois.Min();
+            dVec *= minToi;
+            Vec2 endPoint = position + dVec;
+            Gizmos.DrawLine(cueBall.position.x, cueBall.position.y, endPoint.x, endPoint.y);
         }
     }
 }

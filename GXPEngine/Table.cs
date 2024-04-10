@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 public class Table : Sprite
 {
+    public readonly float topBorderY;
+    public readonly float rightBorderX;
+    public readonly float bottomBorderY;
+    public readonly float leftBorderX;
+
     public int CountOfBalls
         => poolBalls.Count;
     public int CountLineSegments
@@ -31,6 +36,11 @@ public class Table : Sprite
 
         topLeftCorner = new Vec2(x - width / 2, y - height / 2);
         cueBallSpawnPoint = topLeftCorner + new Vec2(555, height / 2);
+
+        topBorderY = topLeftCorner.y + 48;
+        rightBorderX = topLeftCorner.x + 709;
+        bottomBorderY = topLeftCorner.y + 378;
+        leftBorderX = topLeftCorner.x + 48;
 
         AddLineSegments();
         AddPocketAreas();
