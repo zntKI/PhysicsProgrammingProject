@@ -255,29 +255,38 @@ public class Cue : Sprite
         {
             //Launch
             alpha = 0;
+            LaunchBall();
+        }
+    }
 
-            Table table = ((MyGame)game).table;
+    void LaunchBall()
+    {
+        Table table = ((MyGame)game).table;
 
-            //TODO: Refactor this!:
+        cueBall.velocity = vecCueDirection * chargeDistance;
 
-            //TODO: Map the charge distance to a reasonable shot power
-            cueBall.velocity = vecCueDirection * chargeDistance;
-            Vec2 oiginalSpinDirection = table.CueBallMarkerOffset;
-            cueBall.spin = (oiginalSpinDirection.y == 0 ? oiginalSpinDirection.FlipHorizontally() : oiginalSpinDirection) * 0.1f;//Does the check to recreate more realistic simulation
-            cueBall.spin.RotateDegrees(90 + rotation);
+        Vec2 oiginalSpinDirection = table.CueBallMarkerOffset;
+        cueBall.spin = oiginalSpinDirection.FlipHorizontally() * 0.1f;
+        cueBall.spin.RotateDegrees(90 + rotation);
 
-            if (cueBall.spin.x != 0f && oiginalSpinDirection.y == 0)
-            {
-                float sideSpinAmount = Mathf.Abs(oiginalSpinDirection.FlipHorizontally().x);
-                float offsetDegs = Mathf.Map(sideSpinAmount, 0f, table.CueBallMarkerMaxOffset, 0f, 60f);
-                Vec2 newSpin = new Vec2(cueBall.spin);
-                newSpin.RotateDegrees(cueBall.spin.x < 0f ? (90 - offsetDegs) : -(90 - offsetDegs));
+        //Flips the spin so that when the cue ball is hit from the side, it goes to the correct direction
+        if (oiginalSpinDirection.x != 0f)
+        {
+            float sideSpinAmount = Mathf.Abs(oiginalSpinDirection.x);
 
-                //TODO: Map the chargeDistance to the amount of spin as well
+            //Depending on the side spin amount, the cue ball launches more to that direction
+            float offsetDegs = Mathf.Map(sideSpinAmount, 0f, table.CueBallMarkerMaxOffset, 0f, 60f);
+            Vec2 newSpin = new Vec2(cueBall.spin);
+            newSpin.RotateDegrees(cueBall.spin.x < 0f ? (90 - offsetDegs) : -(90 - offsetDegs));
 
-                cueBall.velocity += newSpin;
-                cueBall.spin = cueBall.spin.FlipHorizontally();//Bounces of the rail more realisticly
-            }
+            //Map the chargeDistance to the amount of spin as well
+            //float offsetDegsVel = Mathf.Map(chargeDistance, 0f, chargeDistanceMax, 0f, 60f);
+            //newSpin.RotateDegrees(newSpin.x < 0f ? (60 - offsetDegsVel) : -(90 - offsetDegs));
+
+            //Applies the launch direction
+            cueBall.velocity += newSpin;
+            //Bounces of the rail more realisticly
+            cueBall.spin = cueBall.spin.FlipHorizontally();
         }
     }
 

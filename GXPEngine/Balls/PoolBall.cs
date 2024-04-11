@@ -43,10 +43,6 @@ public class PoolBall : Ball
     public void Step()
     {
         oldPosition = position;
-        if (name == "CueBall")
-        {
-            Console.WriteLine("IN");
-        }
 
         Move();
 
