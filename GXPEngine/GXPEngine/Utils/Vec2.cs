@@ -133,7 +133,19 @@ namespace GXPEngine
         => (firstVec2.x * secondVec2.x) + (firstVec2.y * secondVec2.y);
 
         public static float AngleBetweenVec(Vec2 first, Vec2 second)
-            => Mathf.Abs(first.GetAngleDegrees() - second.GetAngleDegrees());
+        {
+            float firstAngle = first.GetAngleDegrees();
+            float secondAngle = second.GetAngleDegrees();
+            if (Mathf.Sign(firstAngle) != Mathf.Sign(secondAngle) &&
+                Mathf.Abs(firstAngle) >= 90 && Mathf.Abs(secondAngle) >= 90)
+            {
+                firstAngle = 180 - Mathf.Abs(firstAngle);
+                secondAngle = 180 - Math.Abs(secondAngle);
+                return firstAngle + secondAngle;
+            }
+
+            return Mathf.Abs(firstAngle - secondAngle);
+        }
 
         public static float Deg2Rad(float deg)
             => deg * Mathf.PI / 180;
