@@ -16,8 +16,6 @@ public class PoolBall : Ball
     public Vec2 velocity;
     public Vec2 spin;
 
-    Vec2 acceleration;
-
     public bool shouldStartShrinking = false;
     float originalScale;
 
@@ -49,7 +47,7 @@ public class PoolBall : Ball
         UpdateCoordinates();
     }
 
-    protected void Move()
+    void Move()
     {
         velocity *= (1 - friction);
         position += velocity;
@@ -255,8 +253,7 @@ public class PoolBall : Ball
 
         if (name == "CueBall" && spin != new Vec2(0, 0))
         {
-            acceleration = spin;
-            velocity += acceleration;
+            velocity += spin;
 
             spin.SetXY(0, 0);
         }

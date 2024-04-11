@@ -58,7 +58,7 @@ public class Table : Sprite
         AddEasyDraws();
     }
 
-    private void AddPoolBalls()
+    void AddPoolBalls()
     {
         poolBalls = new List<PoolBall>();
 
@@ -98,7 +98,7 @@ public class Table : Sprite
         poolBalls.Add(ball);
     }
 
-    private void AddLineSegments()
+    void AddLineSegments()
     {
         lineSegments = new List<LineSegment>()
         {
@@ -123,7 +123,7 @@ public class Table : Sprite
         };
     }
 
-    private void AddPocketAreas()
+    void AddPocketAreas()
     {
         pockets = new List<Ball>() { 
             //From top left, clockwise
@@ -136,7 +136,7 @@ public class Table : Sprite
         };
     }
 
-    private void AddEasyDraws()
+    void AddEasyDraws()
     {
         cueBallDisplay = new EasyDraw("Assets/ball_16.png", false);
         cueBallDisplay.SetOrigin(cueBallDisplay.width / 2, cueBallDisplay.height / 2);
@@ -189,7 +189,7 @@ public class Table : Sprite
 
 
 
-    private void Update()
+    void Update()
     {
         if (poolBalls == null)
             AddPoolBalls();
@@ -203,7 +203,7 @@ public class Table : Sprite
         }
     }
 
-    private void CheckForInput()
+    void CheckForInput()
     {
         if (Input.GetKey(Key.LEFT))
         {
@@ -223,7 +223,7 @@ public class Table : Sprite
         }
     }
 
-    private void MoveMarker(Vec2 offset)
+    void MoveMarker(Vec2 offset)
     {
         cueBallMarker.x += offset.x;
         cueBallMarker.y += offset.y;
