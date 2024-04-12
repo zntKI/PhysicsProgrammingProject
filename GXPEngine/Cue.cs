@@ -112,11 +112,11 @@ public class Cue : Sprite
         {
             HandleBallSwitch(true);
         }
-        else if (Input.GetKeyDown(Key.A))
+        else if (Input.GetKey(Key.A))
         {
             AdjustAimAngle(false);
         }
-        else if (Input.GetKeyDown(Key.D))
+        else if (Input.GetKey(Key.D))
         {
             AdjustAimAngle(true);
         }
@@ -178,10 +178,10 @@ public class Cue : Sprite
 
     void AdjustAimAngle(bool clockwise)
     {
-        rotation = clockwise ? rotation + 1 : rotation - 1;
+        rotation = clockwise ? rotation + 0.2f : rotation - 0.2f;
 
         //If charging do an additional rotation
-        position.RotateAroundDegrees(chargePosition, clockwise ? 1f : -1f);
+        position.RotateAroundDegrees(chargePosition, clockwise ? 0.2f : -0.2f);
     }
 
     void SlightlyCharge(bool up)
@@ -262,6 +262,7 @@ public class Cue : Sprite
         {
             //Launch
             alpha = 0;
+            cueBallProjection.SetXY(-50, -50);
             LaunchBall();
         }
     }
