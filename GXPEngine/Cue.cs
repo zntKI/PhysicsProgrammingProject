@@ -10,6 +10,7 @@ public class Cue : Sprite
     AimMode aimMode;
 
     PoolBall cueBall;
+    EasyDraw cueBallProjection;
 
     Vec2 position;
 
@@ -52,6 +53,12 @@ public class Cue : Sprite
         cueBall = new PoolBall("Assets/ball_16.png", cueBallPosition);
         cueBall.name = "CueBall";
         ((MyGame)game).table.AddPoolBall(cueBall);
+
+        cueBallProjection = new EasyDraw("Assets/ball_16_proj.png", false);
+        cueBallProjection.SetOrigin(cueBallProjection.width / 2, cueBallProjection.height / 2);
+        cueBallProjection.SetScaleXY(cueBall.scale);
+        game.AddChild(cueBallProjection);
+
         return cueBallPosition;
     }
 
@@ -323,36 +330,93 @@ public class Cue : Sprite
             vecCueDirection = Vec2.GetUnitVectorDeg(rotation);
             Vec2 dVec = vecCueDirection * 1000f;
 
-            Vec2 newPos = position + dVec;
-            List<float> tois = new List<float>(4);
+            //First check balls
+            Tuple<float, Vec2> earliestTOI = new Tuple<float, Vec2>(0f, new Vec2());
+            for (int i = 0; i < table.CountOfBalls; i++)
+            {
+                PoolBall ball = table.GetBall(i);
 
-            float currentToi;
-            if (newPos.y < table.topBorderY)
-            {
-                currentToi = (position.y - table.topBorderY) / (position.y - newPos.y);
-                tois.Add(currentToi);
+                if (ball != cueBall)
+                {
+                    earliestTOI = CheckBall(ball, earliestTOI, dVec);
+                }
             }
-            if (newPos.x > table.rightBorderX)
+            if (earliestTOI.Item1 != 0f)
             {
-                currentToi = (table.rightBorderX - position.x) / (newPos.x - position.x);
-                tois.Add(currentToi);
-            }
-            if (newPos.y > table.bottomBorderY)
-            {
-                currentToi = (table.bottomBorderY - position.y) / (newPos.y - position.y);
-                tois.Add(currentToi);
-            }
-            if (newPos.x < table.leftBorderX)
-            {
-                currentToi = (position.x - table.leftBorderX) / (position.x - newPos.x);
-                tois.Add(currentToi);
-            }
+                dVec *= earliestTOI.Item1;
+                Vec2 ballPoint = cueBall.position + dVec;
+                cueBallProjection.SetXY(ballPoint.x, ballPoint.y);
 
-            float minToi = tois.Min();
-            dVec *= minToi;
-            Vec2 endPoint = position + dVec;
-            Gizmos.DrawLine(cueBall.position.x, cueBall.position.y, endPoint.x, endPoint.y);
+                Gizmos.DrawLine(cueBall.position.x, cueBall.position.y, ballPoint.x, ballPoint.y);
+                Vec2 endPoint = CheckBoundaries(ballPoint, earliestTOI.Item2 * 1000f, table);
+                Gizmos.DrawLine(ballPoint.x, ballPoint.y, endPoint.x, endPoint.y);
+            }
+            //Then boundaries check
+            else
+            {
+                Vec2 boundaryPoint = CheckBoundaries(cueBall.position, dVec, table);
+                cueBallProjection.SetXY(boundaryPoint.x, boundaryPoint.y);
+                Gizmos.DrawLine(cueBall.position.x, cueBall.position.y, boundaryPoint.x, boundaryPoint.y);
+            }
         }
+    }
+
+    private Vec2 CheckBoundaries(Vec2 pos, Vec2 dVec, Table table)
+    {
+        Vec2 newPos = pos + dVec;
+        List<float> tois = new List<float>();
+
+        float currentToi;
+        if (newPos.y < table.topBorderY)
+        {
+            currentToi = (pos.y - table.topBorderY) / (pos.y - newPos.y);
+            tois.Add(currentToi);
+        }
+        if (newPos.x > table.rightBorderX)
+        {
+            currentToi = (table.rightBorderX - pos.x) / (newPos.x - pos.x);
+            tois.Add(currentToi);
+        }
+        if (newPos.y > table.bottomBorderY)
+        {
+            currentToi = (table.bottomBorderY - pos.y) / (newPos.y - pos.y);
+            tois.Add(currentToi);
+        }
+        if (newPos.x < table.leftBorderX)
+        {
+            currentToi = (pos.x - table.leftBorderX) / (pos.x - newPos.x);
+            tois.Add(currentToi);
+        }
+
+        float minToi = tois.Min();
+        dVec *= minToi;
+        Vec2 endPoint = pos + dVec;
+        return endPoint;
+    }
+
+    Tuple<float, Vec2> CheckBall(Ball ball, Tuple<float, Vec2> earliestTOI, Vec2 dVec)
+    {
+        Vec2 relativePosition = cueBall.position - ball.position;
+        float a = Mathf.Pow(dVec.Magnitude(), 2);
+        float b = 2 * Vec2.Dot(relativePosition, dVec);
+        float c = Mathf.Pow(relativePosition.Magnitude(), 2) - Mathf.Pow(cueBallProjection.width / 2 + ball.radius, 2);
+
+        float D = Mathf.Pow(b, 2) - 4 * a * c;
+        if (D < 0)
+        {
+            return earliestTOI;
+        }
+        float toi = (-b - Mathf.Sqrt(D)) / (2 * a);
+        if (toi < 1 && toi >= 0)
+        {
+            if (earliestTOI.Item1 == 0f || toi < earliestTOI.Item1)
+            {
+                Vec2 poi = cueBall.position + dVec * toi;
+                earliestTOI = new Tuple<float, Vec2>(toi, ball.position - poi);
+            }
+        }
+
+        return earliestTOI;
     }
 }
 
