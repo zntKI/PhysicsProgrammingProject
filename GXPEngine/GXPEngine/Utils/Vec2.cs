@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GXPEngine
 {
@@ -94,17 +90,23 @@ namespace GXPEngine
             this = vecToRotate;
         }
 
-        public Vec2 FlipHorizontally()
+        public Vec2 FlippedHorizontally()
             => new Vec2(x *= -1f, y);
 
-        public Vec2 FlipVertically()
+        public Vec2 FlippedVertically()
             => new Vec2(x, y *= -1f);
 
+        public void FlipHorizontally()
+            => x *= -1f;
+
+        public void FlipVertically()
+            => y *= -1f;
+
         public void Reflect(Vec2 unitNormal, float C = 1f)
-        => this = this - (1 + C) * Dot(this, unitNormal) * unitNormal;
+            => this = this - (1 + C) * Dot(this, unitNormal) * unitNormal;
 
         public void Reflect(Vec2 unitNormal, Vec2 COMvec2, float C = 1f)
-        => this = this - (1 + C) * Dot(this - COMvec2, unitNormal) * unitNormal;
+            => this = this - (1 + C) * Dot(this - COMvec2, unitNormal) * unitNormal;
 
         public static Vec2 operator +(Vec2 left, Vec2 right)
             => new Vec2(left.x + right.x, left.y + right.y);
@@ -112,11 +114,11 @@ namespace GXPEngine
         public static Vec2 operator -(Vec2 left, Vec2 right)
             => new Vec2(left.x - right.x, left.y - right.y);
 
-        public static bool operator ==(Vec2 left, Vec2 right)
-            => (left.x == right.x) && (left.y == right.y);
+        public static bool operator ==(Vec2 left, float value)
+            => (left.x == value) && (left.y == value);
 
-        public static bool operator !=(Vec2 left, Vec2 right)
-            => !(left == right);
+        public static bool operator !=(Vec2 left, float value)
+            => !(left == value);
 
         public static Vec2 operator *(float scalar, Vec2 vec2)
             => new Vec2(scalar * vec2.x, scalar * vec2.y);

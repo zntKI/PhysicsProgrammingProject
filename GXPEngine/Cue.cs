@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 public class Cue : Sprite
 {
@@ -13,7 +11,6 @@ public class Cue : Sprite
     EasyDraw cueBallProjection;
 
     Vec2 position;
-
     Vec2 mousePosition;
 
     bool isCharging = false;
@@ -23,9 +20,10 @@ public class Cue : Sprite
     float chargeDistance;
     const float chargeDistanceMax = 100f;
 
+    float angleAdjustAmount;
     float chargeOffsetAmount;
 
-    public Cue(string filename, bool keepInCache = false, bool addCollider = false) : base(filename, keepInCache, addCollider)
+    public Cue(string filename) : base(filename, false, false)
     {
         aimMode = AimMode.Manual;
 
@@ -41,18 +39,17 @@ public class Cue : Sprite
 
         mousePosition = new Vec2(Input.mouseX, Input.mouseY);
 
-        chargeMousePos = new Vec2();
-        vecCueDirection = new Vec2();
-
+        angleAdjustAmount = 0.2f;
         chargeOffsetAmount = 10f;
     }
 
     Vec2 InitCueBall()
     {
-        Vec2 cueBallPosition = ((MyGame)game).table.CueBallSpawnPoint + new Vec2(5, 0);
+        Table table = ((MyGame)game).table;
+        Vec2 cueBallPosition = table.CueBallSpawnPoint + new Vec2(5, 0);
         cueBall = new PoolBall("Assets/ball_16.png", cueBallPosition);
         cueBall.name = "CueBall";
-        ((MyGame)game).table.AddPoolBall(cueBall);
+        table.AddPoolBall(cueBall);
 
         cueBallProjection = new EasyDraw("Assets/ball_16_proj.png", false);
         cueBallProjection.SetOrigin(cueBallProjection.width / 2, cueBallProjection.height / 2);
@@ -156,7 +153,7 @@ public class Cue : Sprite
                 continue;
 
             //Find the nearest ball on that side
-            float angleBetweenCueAndBall = Vec2.AngleBetweenVec(vecToBall, vecCueDirection);//TODO: Fix issue with wrong calculations
+            float angleBetweenCueAndBall = Vec2.AngleBetweenVec(vecToBall, vecCueDirection);
             if (angleBetweenCueAndBall < 0.01f)
                 continue;
 
@@ -178,10 +175,10 @@ public class Cue : Sprite
 
     void AdjustAimAngle(bool clockwise)
     {
-        rotation = clockwise ? rotation + 0.2f : rotation - 0.2f;
+        rotation = clockwise ? rotation + angleAdjustAmount : rotation - angleAdjustAmount;
 
         //If charging do an additional rotation
-        position.RotateAroundDegrees(chargePosition, clockwise ? 0.2f : -0.2f);
+        position.RotateAroundDegrees(chargePosition, clockwise ? angleAdjustAmount : -angleAdjustAmount);
     }
 
     void SlightlyCharge(bool up)
@@ -221,8 +218,6 @@ public class Cue : Sprite
 
     void CheckForMouseInput()
     {
-        //Check if mouse button has been pressed in the current frame
-        //  Yes -> isCharging = true;
         if (!isCharging && Input.GetMouseButtonDown(0))
         {
             isCharging = true;
@@ -256,6 +251,7 @@ public class Cue : Sprite
     {
         if (chargeDistance <= 0)
         {
+            //Nо launch
             position = chargePosition;
         }
         else
@@ -274,7 +270,7 @@ public class Cue : Sprite
         cueBall.velocity = vecCueDirection * chargeDistance;
 
         Vec2 oiginalSpinDirection = table.CueBallMarkerOffset;
-        cueBall.spin = oiginalSpinDirection.FlipHorizontally() * 0.1f;
+        cueBall.spin = oiginalSpinDirection.FlippedHorizontally() * 0.1f;
         cueBall.spin.RotateDegrees(90 + rotation);
 
         //Flips the spin so that when the cue ball is hit from the side, it goes to the correct direction
@@ -284,17 +280,13 @@ public class Cue : Sprite
 
             //Depending on the side spin amount, the cue ball launches more to that direction
             float offsetDegs = Mathf.Map(sideSpinAmount, 0f, table.CueBallMarkerMaxOffset, 0f, 60f);
-            Vec2 newSpin = new Vec2(cueBall.spin);
-            newSpin.RotateDegrees(cueBall.spin.x < 0f ? (90 - offsetDegs) : -(90 - offsetDegs));
-
-            //Map the chargeDistance to the amount of spin as well
-            //float offsetDegsVel = Mathf.Map(chargeDistance, 0f, chargeDistanceMax, 0f, 60f);
-            //newSpin.RotateDegrees(newSpin.x < 0f ? (60 - offsetDegsVel) : -(90 - offsetDegs));
+            Vec2 tempSpin = cueBall.spin;
+            tempSpin.RotateDegrees(cueBall.spin.x < 0f ? (90 - offsetDegs) : -(90 - offsetDegs));
 
             //Applies the launch direction
-            cueBall.velocity += newSpin;
+            cueBall.velocity += tempSpin;
             //Bounces of the rail more realisticly
-            cueBall.spin = cueBall.spin.FlipHorizontally();
+            cueBall.spin = cueBall.spin.FlippedHorizontally();
         }
     }
 
@@ -332,7 +324,7 @@ public class Cue : Sprite
             Vec2 dVec = vecCueDirection * 1000f;
 
             //First check balls
-            Tuple<float, Vec2> earliestTOI = new Tuple<float, Vec2>(0f, new Vec2());
+            Tuple<float, Vec2> earliestTOI = new Tuple<float, Vec2>(0f, new Vec2());//Contains the smallest time of impact and the collision normal
             for (int i = 0; i < table.CountOfBalls; i++)
             {
                 PoolBall ball = table.GetBall(i);
@@ -349,6 +341,7 @@ public class Cue : Sprite
                 cueBallProjection.SetXY(ballPoint.x, ballPoint.y);
 
                 Gizmos.DrawLine(cueBall.position.x, cueBall.position.y, ballPoint.x, ballPoint.y);
+
                 Vec2 endPoint = CheckBoundaries(ballPoint, earliestTOI.Item2 * 1000f, table);
                 Gizmos.DrawLine(ballPoint.x, ballPoint.y, endPoint.x, endPoint.y);
             }
@@ -356,13 +349,14 @@ public class Cue : Sprite
             else
             {
                 Vec2 boundaryPoint = CheckBoundaries(cueBall.position, dVec, table);
+
                 cueBallProjection.SetXY(boundaryPoint.x, boundaryPoint.y);
                 Gizmos.DrawLine(cueBall.position.x, cueBall.position.y, boundaryPoint.x, boundaryPoint.y);
             }
         }
     }
 
-    private Vec2 CheckBoundaries(Vec2 pos, Vec2 dVec, Table table)
+    Vec2 CheckBoundaries(Vec2 pos, Vec2 dVec, Table table)
     {
         Vec2 newPos = pos + dVec;
         List<float> tois = new List<float>();

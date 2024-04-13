@@ -1,9 +1,4 @@
 ﻿using GXPEngine;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 public class PoolBall : Ball
 {
@@ -11,31 +6,23 @@ public class PoolBall : Ball
     public readonly float bounciness;
     public readonly float friction;
 
-    public Vec2 oldPosition;
-
     public Vec2 velocity;
     public Vec2 spin;
+
+    Vec2 oldPosition;
 
     public bool shouldStartShrinking = false;
     float originalScale;
 
-    public PoolBall(string filename, Vec2 position, bool keepInCache = false, bool addCollider = false) : base(filename, keepInCache, addCollider)
+    public PoolBall(string filename, Vec2 position) : base(filename, position)
     {
         mass = 0.17f;
         bounciness = 0.95f;
-        friction = 0.03f; //Think of smth better //0.06f - original
-
-        SetOrigin(width / 2, height / 2);
-        SetScaleXY(scale / 6f);
+        friction = 0.03f;
+    
         originalScale = scale;
 
-        radius = width / 2;
-
-        this.position = position;
         UpdateCoordinates();
-        oldPosition = new Vec2();
-
-        velocity = new Vec2();
     }
 
     public void Step()
@@ -53,17 +40,17 @@ public class PoolBall : Ball
         position += velocity;
 
         CollisionInfo firstCollision = null;
-        firstCollision = CheckForBalls(firstCollision);
-        firstCollision = CheckForBoundaries(firstCollision);
+        firstCollision = CheckForBallsCollision(firstCollision);
+        firstCollision = CheckForBoundariesCollisions(firstCollision);
         if (firstCollision != null)
         {
             ResolveCollision(firstCollision);
         }
 
-        CheckPocketsCollision();
+        CheckPocketsCollisions();
     }
 
-    void CheckPocketsCollision()
+    void CheckPocketsCollisions()
     {
         Table table = ((MyGame)game).table;
 
@@ -87,7 +74,6 @@ public class PoolBall : Ball
             float toi = (-b - Mathf.Sqrt(D)) / (2 * a);
             if (toi < 1 && toi >= 0)
             {
-                //velocity.SetXY(0, 0);
                 position = pocket.position;
 
                 shouldStartShrinking = true;
@@ -97,7 +83,7 @@ public class PoolBall : Ball
         }
     }
 
-    CollisionInfo CheckForBalls(CollisionInfo earliestCollision)
+    CollisionInfo CheckForBallsCollision(CollisionInfo earliestCollision)
     {
         Table table = ((MyGame)game).table;
 
@@ -114,7 +100,7 @@ public class PoolBall : Ball
         return earliestCollision;
     }
 
-    CollisionInfo CheckForBoundaries(CollisionInfo earliestCollision)
+    CollisionInfo CheckForBoundariesCollisions(CollisionInfo earliestCollision)
     {
         Table table = ((MyGame)game).table;
 
@@ -251,10 +237,9 @@ public class PoolBall : Ball
             velocity.Reflect(coll.normal, bounciness);
         }
 
-        if (name == "CueBall" && spin != new Vec2(0, 0))
+        if (name == "CueBall" && spin != 0f)
         {
             velocity += spin;
-
             spin.SetXY(0, 0);
         }
     }

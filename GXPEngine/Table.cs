@@ -1,10 +1,5 @@
 ﻿using GXPEngine;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
 
 public class Table : Sprite
 {
@@ -13,21 +8,19 @@ public class Table : Sprite
     public readonly float bottomBorderY;
     public readonly float leftBorderX;
 
+    public readonly Vec2 CueBallSpawnPoint;
+
     public int CountOfBalls
         => poolBalls.Count;
     public int CountLineSegments
         => lineSegments.Count;
-    public Vec2 CueBallSpawnPoint
-        => cueBallSpawnPoint;
     public Vec2 CueBallMarkerOffset
-        => new Vec2(cueBallMarker.x, cueBallMarker.y) - new Vec2(cueBallDisplay.x, cueBallDisplay.y);
-
+        => new Vec2(cueBallMarker.x, cueBallMarker.y) - new Vec2(cueBallSpinDisplay.x, cueBallSpinDisplay.y);
     public float CueBallMarkerMaxOffset
-        => cueBallDisplay.width / 2 - cueBallMarker.width / 2;
+        => cueBallSpinDisplay.width / 2 - cueBallMarker.width / 2;
 
 
     readonly Vec2 topLeftCorner;
-    readonly Vec2 cueBallSpawnPoint;
 
     List<PoolBall> poolBalls;
     List<LineSegment> lineSegments;
@@ -35,8 +28,8 @@ public class Table : Sprite
     //Pocket areas
     List<Ball> pockets;
 
-    EasyDraw cueBallDisplay;
-    EasyDraw cueBallMarker;
+    EasyDraw cueBallSpinDisplay;//top right corner
+    EasyDraw cueBallMarker;//marker which displays the spin that will be applied to the ball
 
     public Table(string filename, bool keepInCache = false, bool addCollider = false) : base(filename, keepInCache, addCollider)
     {
@@ -45,12 +38,13 @@ public class Table : Sprite
         SetScaleXY(scale / 6f);
 
         topLeftCorner = new Vec2(x - width / 2, y - height / 2);
-        cueBallSpawnPoint = topLeftCorner + new Vec2(555, height / 2);
 
         topBorderY = topLeftCorner.y + 48;
         rightBorderX = topLeftCorner.x + 709;
         bottomBorderY = topLeftCorner.y + 378;
         leftBorderX = topLeftCorner.x + 48;
+
+        CueBallSpawnPoint = topLeftCorner + new Vec2(555, height / 2);
 
         AddLineSegments();
         AddPocketAreas();
@@ -67,8 +61,10 @@ public class Table : Sprite
         AddPoolBall(ball);
 
         float radius = ball.radius;
+        //X and Y coordinates used for the delta vec
         float dVecX = Mathf.Cos(Mathf.PI / 6) * 2 * radius;
         float dVecY = Mathf.Sin(Mathf.PI / 6) * 2 * radius;
+        //Delta vecs depending on the direction of the next ball
         Vec2 vecRightLane = new Vec2(-dVecX, -dVecY);
         Vec2 vecLeftLane = new Vec2(-dVecX, dVecY);
         AddPoolBall(new PoolBall("Assets/ball_11.png", apexPoint + vecRightLane));
@@ -138,16 +134,16 @@ public class Table : Sprite
 
     void AddEasyDraws()
     {
-        cueBallDisplay = new EasyDraw("Assets/ball_16.png", false);
-        cueBallDisplay.SetOrigin(cueBallDisplay.width / 2, cueBallDisplay.height / 2);
-        cueBallDisplay.SetScaleXY(cueBallDisplay.scale / 2);
-        cueBallDisplay.SetXY(game.width - cueBallDisplay.width / 2, 0 + cueBallDisplay.height / 2);
-        game.AddChild(cueBallDisplay);
+        cueBallSpinDisplay = new EasyDraw("Assets/ball_16.png", false);
+        cueBallSpinDisplay.SetOrigin(cueBallSpinDisplay.width / 2, cueBallSpinDisplay.height / 2);
+        cueBallSpinDisplay.SetScaleXY(cueBallSpinDisplay.scale / 2);
+        cueBallSpinDisplay.SetXY(game.width - cueBallSpinDisplay.width / 2, 0 + cueBallSpinDisplay.height / 2);
+        game.AddChild(cueBallSpinDisplay);
 
         cueBallMarker = new EasyDraw("Assets/ball_marker.png", false);
         cueBallMarker.SetOrigin(cueBallMarker.width / 2, cueBallMarker.height / 2);
-        cueBallMarker.SetScaleXY(cueBallDisplay.scale / 4);
-        cueBallMarker.SetXY(cueBallDisplay.x, cueBallDisplay.y);
+        cueBallMarker.SetScaleXY(cueBallSpinDisplay.scale / 4);
+        cueBallMarker.SetXY(cueBallSpinDisplay.x, cueBallSpinDisplay.y);
         game.AddChild(cueBallMarker);
     }
 
@@ -181,6 +177,7 @@ public class Table : Sprite
         return allStopped;
     }
 
+
     public LineSegment GetLineSegment(int i)
         => lineSegments[i];
 
@@ -203,6 +200,9 @@ public class Table : Sprite
         }
     }
 
+    /// <summary>
+    /// Checks for input regarding the cue ball marker movement
+    /// </summary>
     void CheckForInput()
     {
         if (Input.GetKey(Key.LEFT))
@@ -228,7 +228,7 @@ public class Table : Sprite
         cueBallMarker.x += offset.x;
         cueBallMarker.y += offset.y;
         float distance = CueBallMarkerOffset.Magnitude();
-        if (distance > cueBallDisplay.width / 2 - cueBallMarker.width / 2)
+        if (distance > CueBallMarkerMaxOffset)
         {
             cueBallMarker.x -= offset.x;
             cueBallMarker.y -= offset.y;
@@ -237,7 +237,7 @@ public class Table : Sprite
 
     public void ResetCueMarkerPos()
     {
-        cueBallMarker.x = cueBallDisplay.x;
-        cueBallMarker.y = cueBallDisplay.y;
+        cueBallMarker.x = cueBallSpinDisplay.x;
+        cueBallMarker.y = cueBallSpinDisplay.y;
     }
 }

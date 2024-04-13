@@ -1,22 +1,30 @@
 ﻿using GXPEngine;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 public class Ball : Sprite
 {
-    public float radius;
+    public readonly float radius;
     public Vec2 position;
 
-    public Ball(Vec2 position, float radius = 0f) : base("Assets/ball_16.png", false, false)
+    //Used only in the constructors to differentiate between pool balls and the other types
+    const string dummySprite = "Assets/ball_16_proj.png";
+
+    public Ball(string filename, Vec2 position, float radius = 0f) : base(filename, false, false)
     {
-        this.position = position;
+        //Used for pool balls
+        if (filename != dummySprite)
+        {
+            SetOrigin(width / 2, height / 2);
+            SetScaleXY(scale / 6f);
+
+            radius = width / 2;
+        }
+
         this.radius = radius;
+        this.position = position;
     }
 
-    public Ball(string filename, bool keepInCache = false, bool addCollider = true) : base(filename, keepInCache, addCollider)
+    //Used for pockets and line caps of the line segments
+    public Ball(Vec2 position, float radius = 0f) : this(dummySprite, position, radius)
     {
     }
 }
