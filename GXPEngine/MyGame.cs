@@ -1,15 +1,33 @@
 using GXPEngine;
 using System;
+using System.Drawing;
 
 public class MyGame : Game {
 	
 	public Table table;
 
+    EasyDraw textCreator;
+
 	public MyGame() : base(960, 540, false)
 	{
 		table = new Table("Assets/table.png");
 		AddChild(table);
-        UnitTests();
+
+        InitEasyDraw();
+
+        //UnitTests();
+    }
+
+    void InitEasyDraw()
+    {
+        textCreator = new EasyDraw(250, 50, false);
+        textCreator.TextAlign(CenterMode.Center, CenterMode.Center);
+        textCreator.Fill(Color.White);
+        textCreator.TextSize(15f);
+        textCreator.Text("Made by: Kaloyan Ivanov", true, 255, 0, 0, 0);
+        textCreator.SetOrigin(textCreator.width / 2, textCreator.height / 2);
+        textCreator.SetXY(width / 2, height - textCreator.height / 2);
+        AddChild(textCreator);
     }
 
     void Update() {
