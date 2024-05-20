@@ -38,3 +38,6 @@ Throughout the course, we studied various concepts concerning Vector Math, after
 ### Spin and cue ball direction
 1. By pressing or holding the arrow keys, you can adjust the spin and the direction of the cue ball
 2. When ready, you can launch the cue ball and test what will happen :)
+
+## Art
+From: https://opengameart.org/content/8-ball-pool-assets
