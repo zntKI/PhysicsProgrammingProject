@@ -2,6 +2,11 @@
 
 A project I chose to work on for my Physics Programming assignment, which recreates a 2D Pool environment.
 
+<p align="center">
+  <img src="Media/demo.gif"><br/>
+  *<i>Low frame rate caused by gif limitations</i>*
+</p>
+
 ## Overview
 
 Throughout the course, we studied various concepts concerning Vector Math, after wchich we got the chance to see them in practice by implementing our own Vec2 struct. Given that, all functionalities in the simulation, related to Vector Math, are implemented from the ground up, using the Vec2 struct.
@@ -14,13 +19,6 @@ Throughout the course, we studied various concepts concerning Vector Math, after
 - **Ball-pocket detection:** Detects if a ball has gone in a given pocket
 - **Cue ball spin modifier:** Determines cue ball spin and direction, depending on where the cue ball was hit
 - **Shot-line indicator:** Helps players visualize the path the object ball will take after being struck by the cue ball
-
-## Demo
-
-<p align="center">
-  <img src="Media/demo.gif"><br/>
-  *<i>Low frame rate caused by gif limitations</i>*
-</p>
 
 ## Controls
 
