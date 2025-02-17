@@ -9,7 +9,7 @@ A project I chose to work on for my Physics Programming assignment, which recrea
 
 ## Overview
 
-Throughout the course, we studied various concepts concerning Vector Math, after wchich we got the chance to see them in practice by implementing our own Vec2 struct. Given that, all functionalities in the simulation, related to Vector Math, are implemented from the ground up, using the Vec2 struct.
+Throughout the course, we studied various concepts concerning Vector Math, after wchich we got the chance to see them in practice by implementing our own Vec2 struct. Given that, all functionalities in the simulation, related to Vector Math, are implemented from the ground up, using the Vec2 struct. All done by utilizing the [GXP 2D Game Engine](https://github.com/zntKI/PhysicsProgrammingProject/tree/main/GXPEngine/GXPEngine) - a code-based small engine designed and developed by the teachers to introduce students to how a game engine may opperate.
 
 ## Features
 
